@@ -50,5 +50,14 @@ export const generateChartData = () => {
     confidence: Math.min(100, 50 + i * 3.5 + (Math.random() - 0.5) * 10),
   }));
 
-  return { dwellData, flightData, comparisonData, confidenceData };
+  const clusterData = DATASET_USERS.flatMap((u) =>
+    Array.from({ length: 30 }, () => ({
+      dwell: u.avgDwell + (Math.random() - 0.5) * u.tolerance * 2,
+      flight: u.avgFlight + (Math.random() - 0.5) * u.tolerance * 6,
+      user: u.name,
+      color: u.color,
+    }))
+  );
+
+  return { dwellData, flightData, comparisonData, confidenceData, clusterData };
 };

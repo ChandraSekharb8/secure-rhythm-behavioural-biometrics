@@ -175,9 +175,12 @@ const Index = () => {
                   RESET
                 </button>
               </div>
+              <p className="text-sm text-muted-foreground mb-3 font-mono tracking-wide bg-muted/30 border border-border rounded-lg px-4 py-2">
+                "The quick brown fox jumps over the lazy dog"
+              </p>
               <textarea
                 className="typing-area h-40"
-                placeholder="Type: The quick brown fox jumps over the lazy fox"
+                placeholder="Start typing the sentence above..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKeyDown}

@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import {
   Brain, Layers, ShieldCheck, Database, Cpu, BarChart3,
-  Globe, GitBranch, AlertTriangle, CheckCircle2, Code2
+  Globe, GitBranch, AlertTriangle, CheckCircle2, Code2,
+  ExternalLink, Target, Fingerprint, Lock, Activity
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -40,8 +41,51 @@ const AboutPage = () => (
         </h1>
         <p className="section-subtitle mx-auto mt-3">
           A secure and continuous authentication system using behavioral biometrics,
-          specifically keystroke dynamics — learning your unique typing rhythm.
+          specifically keystroke dynamics — learning your unique typing rhythm to verify identity
+          without relying solely on traditional passwords.
         </p>
+      </motion.div>
+
+      {/* Problem Statement */}
+      <motion.div {...fadeUp(0.05)} className="mb-16 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-display font-bold text-foreground text-center mb-6">
+          Problem <span className="text-gradient">Statement</span>
+        </h2>
+        <div className="glass-card p-6 space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Traditional authentication methods like passwords and PINs are vulnerable to theft, phishing, and brute-force attacks. Once compromised, anyone can impersonate the legitimate user. There is a growing need for <strong className="text-foreground">continuous and passive authentication</strong> that verifies identity based on <em>who you are</em>, not just <em>what you know</em>.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            This project addresses that gap by leveraging <strong className="text-foreground">keystroke dynamics</strong> — the unique rhythm and pattern in how each person types — as a behavioral biometric for secure, non-intrusive authentication.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Objective */}
+      <motion.div {...fadeUp(0.08)} className="mb-16 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-display font-bold text-foreground text-center mb-6">
+          Project <span className="text-gradient">Objective</span>
+        </h2>
+        <div className="glass-card p-6 space-y-3">
+          <div className="flex items-start gap-3">
+            <Target className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              Build a deep learning model that can <strong className="text-foreground">identify users based on their typing patterns</strong> by analyzing keystroke timing features — specifically dwell time and flight time.
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <Fingerprint className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              Implement <strong className="text-foreground">uncertainty-aware authentication</strong> using Monte Carlo Dropout, allowing the system to measure confidence and trigger fallback verification when needed.
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <Lock className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+            <p className="text-sm text-muted-foreground">
+              Create a <strong className="text-foreground">real-time demo system</strong> where users can type and see live authentication results, showcasing the practical viability of behavioral biometrics.
+            </p>
+          </div>
+        </div>
       </motion.div>
 
       {/* Key Features */}
@@ -58,6 +102,31 @@ const AboutPage = () => (
             </div>
           </div>
         ))}
+      </motion.div>
+
+      {/* How It Works */}
+      <motion.div {...fadeUp(0.12)} className="mb-16 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-display font-bold text-foreground text-center mb-6">
+          How It <span className="text-gradient">Works</span>
+        </h2>
+        <div className="glass-card p-6 space-y-4">
+          {[
+            { step: "1", title: "User Types", desc: "The user types a predefined sentence (e.g., \"The quick brown fox jumps over the lazy fox\") on the demo interface." },
+            { step: "2", title: "Feature Extraction", desc: "The system captures precise key press/release timestamps and computes dwell times and flight times for each keystroke." },
+            { step: "3", title: "Model Prediction", desc: "The CNN + Bi-LSTM model processes the timing features and predicts which user is typing, along with a confidence score." },
+            { step: "4", title: "Uncertainty Check", desc: "If confidence is high, the user is authenticated seamlessly. If low, a fallback password verification is triggered." },
+          ].map((item) => (
+            <div key={item.step} className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/30 flex items-center justify-center shrink-0">
+                <span className="text-primary font-display text-sm font-bold">{item.step}</span>
+              </div>
+              <div>
+                <p className="font-display text-sm text-foreground mb-1">{item.title}</p>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </motion.div>
 
       {/* Architecture */}
@@ -157,6 +226,15 @@ const AboutPage = () => (
               <p className="text-xs text-muted-foreground">
                 Keystroke timing data was collected using a custom-built <strong className="text-foreground">HTML/JavaScript Typing Biometrics Collector</strong>. This lightweight tool captures individual key press and release events via <code className="text-primary/80 bg-primary/5 px-1 rounded">performance.now()</code>, calculates per-key dwell times (key hold duration) and inter-key flight times (gap between consecutive keystrokes), and outputs the raw timing arrays along with their averages — enabling rapid dataset generation across multiple typing sessions.
               </p>
+              <a
+                href="/typing-biometrics-collector.html"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 mt-3 text-xs text-primary hover:text-primary/80 transition-colors font-display"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Try the Data Collection Tool Demo
+              </a>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ import ParticleBackground from "@/components/ParticleBackground";
 import { generateChartData, COLORS, DATASET_USERS } from "@/data/typingDataset";
 
 const GraphPage = () => {
-  const [data, setData] = useState(generateChartData);
+  const [data, setData] = useState(() => generateChartData());
 
   useEffect(() => {
     const interval = setInterval(() => setData(generateChartData()), 5000);

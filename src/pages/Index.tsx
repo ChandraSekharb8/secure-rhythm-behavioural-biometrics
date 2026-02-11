@@ -24,7 +24,7 @@ const Index = () => {
   const [flightTimes, setFlightTimes] = useState<number[]>([]);
   const [detectedUser, setDetectedUser] = useState<string | null>(null);
   const [confidence, setConfidence] = useState(0);
-  const [authStatus, setAuthStatus] = useState<"idle" | "authenticated" | "fallback">("idle");
+  const [authStatus, setAuthStatus] = useState<"idle" | "authenticated" | "fallback" | "denied">("idle");
   const [showFallback, setShowFallback] = useState(false);
   const [fallbackPassword, setFallbackPassword] = useState("");
   const lastKeyUpTime = useRef<number>(0);
@@ -106,6 +106,9 @@ const Index = () => {
       setAuthStatus("authenticated");
       setShowFallback(false);
       setConfidence(100);
+    } else {
+      setAuthStatus("denied");
+      setShowFallback(false);
     }
   };
 
@@ -264,6 +267,24 @@ const Index = () => {
                       <p className="font-display text-lg text-foreground">{detectedUser}?</p>
                       <p className="text-xs text-destructive uppercase tracking-widest mt-1">
                         Low Confidence
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {authStatus === "denied" && (
+                    <motion.div
+                      key="denied"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="text-center"
+                    >
+                      <div className="w-16 h-16 rounded-full bg-destructive/10 border border-destructive/30 flex items-center justify-center mx-auto mb-3">
+                        <ShieldAlert className="w-8 h-8 text-destructive" />
+                      </div>
+                      <p className="font-display text-lg text-foreground">Access Denied</p>
+                      <p className="text-xs text-destructive uppercase tracking-widest mt-1">
+                        Not Authorized
                       </p>
                     </motion.div>
                   )}

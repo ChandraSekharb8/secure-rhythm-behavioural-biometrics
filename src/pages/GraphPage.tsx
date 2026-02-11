@@ -8,51 +8,13 @@ import {
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ParticleBackground from "@/components/ParticleBackground";
-
-const generateData = () => {
-  const users = ["Alice", "Bob", "Charlie", "Diana"];
-  const dwellData = Array.from({ length: 20 }, (_, i) => ({
-    keystroke: i + 1,
-    Alice: 80 + Math.random() * 30,
-    Bob: 105 + Math.random() * 30,
-    Charlie: 60 + Math.random() * 30,
-    Diana: 135 + Math.random() * 30,
-  }));
-
-  const flightData = Array.from({ length: 20 }, (_, i) => ({
-    keystroke: i + 1,
-    Alice: 115 + Math.random() * 30,
-    Bob: 155 + Math.random() * 30,
-    Charlie: 85 + Math.random() * 30,
-    Diana: 185 + Math.random() * 30,
-  }));
-
-  const comparisonData = users.map((name) => ({
-    name,
-    dwellTime: [95, 120, 75, 150][users.indexOf(name)],
-    flightTime: [130, 170, 100, 200][users.indexOf(name)],
-  }));
-
-  const confidenceData = Array.from({ length: 15 }, (_, i) => ({
-    session: i + 1,
-    confidence: Math.min(100, 50 + i * 3.5 + (Math.random() - 0.5) * 10),
-  }));
-
-  return { dwellData, flightData, comparisonData, confidenceData };
-};
-
-const COLORS = {
-  Alice: "#00d2d3",
-  Bob: "#3b82f6",
-  Charlie: "#8b5cf6",
-  Diana: "#f59e0b",
-};
+import { generateChartData, COLORS } from "@/data/typingDataset";
 
 const GraphPage = () => {
-  const [data, setData] = useState(generateData);
+  const [data, setData] = useState(generateChartData);
 
   useEffect(() => {
-    const interval = setInterval(() => setData(generateData()), 5000);
+    const interval = setInterval(() => setData(generateChartData()), 5000);
     return () => clearInterval(interval);
   }, []);
 

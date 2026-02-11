@@ -18,7 +18,7 @@ const modules = [
 
 const techStack = [
   "Python", "TensorFlow / PyTorch", "NumPy", "Pandas",
-  "scikit-learn", "matplotlib", "Flask / Django",
+  "scikit-learn", "matplotlib", "Flask / Django", "HTML / JavaScript",
 ];
 
 const fadeUp = (delay: number) => ({
@@ -135,8 +135,35 @@ const AboutPage = () => (
         </div>
       </motion.div>
 
+      {/* Dataset & Data Collection */}
+      <motion.div {...fadeUp(0.5)} className="mb-16 max-w-2xl mx-auto">
+        <h2 className="text-2xl font-display font-bold text-foreground text-center mb-8">
+          Dataset & <span className="text-gradient">Data Collection</span>
+        </h2>
+        <div className="glass-card p-6 space-y-4">
+          <div className="flex items-start gap-3">
+            <Database className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+            <div>
+              <p className="font-display text-sm text-foreground mb-1">Dataset Used</p>
+              <p className="text-xs text-muted-foreground">
+                The model was trained on <strong className="text-foreground">generated_typing_dataset_FULL_sentence.xlsx</strong>, containing keystroke timing data (dwell times and flight times) collected from multiple users — including Varsha, Nagendra, Chandra Shekar, and Devi — each with pre-calculated average dwell and flight times.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Code2 className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+            <div>
+              <p className="font-display text-sm text-foreground mb-1">Data Collection Tool</p>
+              <p className="text-xs text-muted-foreground">
+                Keystroke timing data was collected using a custom-built <strong className="text-foreground">HTML/JavaScript Typing Biometrics Collector</strong>. This lightweight tool captures individual key press and release events via <code className="text-primary/80 bg-primary/5 px-1 rounded">performance.now()</code>, calculates per-key dwell times (key hold duration) and inter-key flight times (gap between consecutive keystrokes), and outputs the raw timing arrays along with their averages — enabling rapid dataset generation across multiple typing sessions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
       {/* Tech Stack */}
-      <motion.div {...fadeUp(0.5)} className="text-center">
+      <motion.div {...fadeUp(0.6)} className="text-center">
         <h2 className="text-2xl font-display font-bold text-foreground mb-6">
           Technologies <span className="text-gradient">Used</span>
         </h2>

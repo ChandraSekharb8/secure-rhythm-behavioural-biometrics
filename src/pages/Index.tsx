@@ -177,7 +177,7 @@ const Index = () => {
               </div>
               <textarea
                 className="typing-area h-40"
-                placeholder="Start typing here to begin authentication analysis..."
+                placeholder="Type: The quick brown fox jumps over the lazy fox"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKeyDown}

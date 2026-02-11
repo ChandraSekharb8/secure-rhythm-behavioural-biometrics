@@ -9,25 +9,13 @@ import Footer from "@/components/Footer";
 import ParticleBackground from "@/components/ParticleBackground";
 import heroBg from "@/assets/hero-bg.jpg";
 
+import { DATASET_USERS } from "@/data/typingDataset";
+
 interface KeyEvent {
   key: string;
   downTime: number;
   upTime?: number;
 }
-
-interface UserProfile {
-  name: string;
-  avgDwell: number;
-  avgFlight: number;
-  tolerance: number;
-}
-
-const PREDEFINED_USERS: UserProfile[] = [
-  { name: "Alice", avgDwell: 95, avgFlight: 130, tolerance: 35 },
-  { name: "Bob", avgDwell: 120, avgFlight: 170, tolerance: 40 },
-  { name: "Charlie", avgDwell: 75, avgFlight: 100, tolerance: 30 },
-  { name: "Diana", avgDwell: 150, avgFlight: 200, tolerance: 45 },
-];
 
 const Index = () => {
   const [text, setText] = useState("");
@@ -46,10 +34,10 @@ const Index = () => {
 
   const identifyUser = useCallback(() => {
     if (dwellTimes.length < 5) return;
-    let bestMatch = PREDEFINED_USERS[0];
+    let bestMatch = DATASET_USERS[0];
     let bestDist = Infinity;
 
-    PREDEFINED_USERS.forEach((user) => {
+    DATASET_USERS.forEach((user) => {
       const dwellDiff = Math.abs(avgDwell - user.avgDwell);
       const flightDiff = Math.abs(avgFlight - user.avgFlight);
       const dist = Math.sqrt(dwellDiff ** 2 + flightDiff ** 2);

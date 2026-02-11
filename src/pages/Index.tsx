@@ -303,7 +303,7 @@ const Index = () => {
                     className="mt-4 pt-4 border-t border-border overflow-hidden"
                   >
                     <p className="text-xs text-muted-foreground mb-2">
-                      Fallback: Enter password <code className="text-primary">secure123</code>
+                      Typing pattern not recognized. Enter your password to verify identity.
                     </p>
                     <div className="flex gap-2">
                       <input

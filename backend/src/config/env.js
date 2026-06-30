@@ -1,3 +1,9 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -28,8 +34,9 @@ export const env = {
   smtpPass: process.env.SMTP_PASS ?? "",
   smtpRequireConfigured:
     String(process.env.SMTP_REQUIRE_CONFIGURED ?? "false").toLowerCase() === "true",
-  mlModelPath:
-    process.env.ML_MODEL_PATH ?? "C:/Users/Deepa/Downloads/behavioural-biometrics/behavioural-biometrics/secure-rhythm/backend/data/keystroke-model.json",
+ mlModelPath:
+  process.env.ML_MODEL_PATH ??
+  path.resolve(__dirname, "../data/keystroke-model.json"),
   profileEmailDomain: process.env.PROFILE_EMAIL_DOMAIN ?? "keystrokeid.local",
   defaultProfilePassword: process.env.DEFAULT_PROFILE_PASSWORD ?? "secure123",
   dslDatasetPath:

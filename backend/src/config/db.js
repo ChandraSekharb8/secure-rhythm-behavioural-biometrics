@@ -2,13 +2,17 @@ import mongoose from "mongoose";
 import { env } from "./env.js";
 
 export const connectToDatabase = async () => {
-  mongoose.set("strictQuery", true);
+  console.log("Mongo URI:", env.mongoUri);
 
-  await mongoose.connect(env.mongoUri, {
-    serverSelectionTimeoutMS: 10000,
-  });
+  try {
+    await mongoose.connect(env.mongoUri);
 
-  console.log("✅ MongoDB Connected");
+    console.log("✅ Connected");
+  } catch (err) {
+    console.error("FULL ERROR:");
+    console.error(err);
+    throw err;
+  }
 };
 
 export const disconnectDatabase = async () => {

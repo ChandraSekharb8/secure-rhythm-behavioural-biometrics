@@ -625,13 +625,9 @@ export const trainMlModelFromDslDataset = async () => {
 
 export const ensureMlModelReady = async () => {
   if (modelCache) return modelCache;
-  try {
-    modelCache = await loadModel();
-    return modelCache;
-  } catch {
-    await trainMlModelFromDslDataset();
-    return modelCache;
-  }
+
+  modelCache = await loadModel();
+  return modelCache;
 };
 
 export const getMlModelMeta = async () => {

@@ -39,6 +39,6 @@ export const env = {
   path.resolve(__dirname, "../data/keystroke-model.json"),
   profileEmailDomain: process.env.PROFILE_EMAIL_DOMAIN ?? "keystrokeid.local",
   defaultProfilePassword: process.env.DEFAULT_PROFILE_PASSWORD ?? "secure123",
-  dslDatasetPath:
-    process.env.DSL_DATASET_PATH ?? "C:/Users/Deepa/Downloads/DSL-StrongPasswordData.csv",
-};
+  mlModelPath:
+process.env.ML_MODEL_PATH ??
+path.resolve(__dirname, "../../data/keystroke-model.json"),};

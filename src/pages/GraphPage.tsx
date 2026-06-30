@@ -1,22 +1,61 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Activity, TrendingUp, Users } from "lucide-react";
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Area, AreaChart, ScatterChart, Scatter, Cell, Legend
+  Tooltip, ResponsiveContainer, Area, AreaChart, ScatterChart, Scatter, Legend
 } from "recharts";
+import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ParticleBackground from "@/components/ParticleBackground";
-import { generateChartData, COLORS, DATASET_USERS } from "@/data/typingDataset";
+import { fetchDashboardData, fetchMlModelReport, type DashboardData, type MlModelReport } from "@/lib/api";
+
+const EMPTY_DASHBOARD_DATA: DashboardData = {
+  users: [],
+  colors: {},
+  dwellData: [],
+  flightData: [],
+  comparisonData: [],
+  confidenceData: [],
+  clusterData: [],
+  resultDistribution: [],
+  featureTrendData: [],
+  tenSecondMatchByUser: [],
+  featureAverages: [],
+  sampleCount: 0,
+  updatedAt: new Date(0).toISOString(),
+};
+
+const EMPTY_MODEL_REPORT: MlModelReport = {
+  version: "0.0.0",
+  trainedAt: "",
+  targetAccuracy: 98,
+  sampleCount: 0,
+  classCount: 0,
+  models: [],
+  history: [],
+};
 
 const GraphPage = () => {
-  const [data, setData] = useState(() => generateChartData());
+  const {
+    data = EMPTY_DASHBOARD_DATA,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["dashboard-charts"],
+    queryFn: fetchDashboardData,
+    refetchInterval: 5000,
+  });
 
-  useEffect(() => {
-    const interval = setInterval(() => setData(generateChartData()), 5000);
-    return () => clearInterval(interval);
-  }, []);
+  const {
+    data: modelReport = EMPTY_MODEL_REPORT,
+    isLoading: modelLoading,
+  } = useQuery({
+    queryKey: ["ml-model-report"],
+    queryFn: fetchMlModelReport,
+    refetchInterval: 15000,
+  });
 
   const chartCard = (
     title: string,
@@ -61,15 +100,52 @@ const GraphPage = () => {
             Analytics <span className="text-gradient">Dashboard</span>
           </h1>
           <p className="section-subtitle mx-auto">
-            Real-time visualization of keystroke biometric patterns across users.
+            Real-time visualization generated from live typing sessions.
           </p>
           <div className="inline-flex items-center gap-2 glass-card px-3 py-1.5 mt-4">
             <span className="w-2 h-2 rounded-full bg-primary animate-glow-pulse" />
             <span className="text-xs text-primary font-display tracking-wider">LIVE DATA</span>
           </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Session samples used: {data.sampleCount}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            ML model samples: {modelReport.sampleCount} | Target accuracy: {modelReport.targetAccuracy}%
+          </p>
+          {isLoading && <p className="text-xs text-muted-foreground mt-3">Loading dashboard data...</p>}
+          {modelLoading && <p className="text-xs text-muted-foreground">Loading model metrics...</p>}
+          {isError && (
+            <p className="text-xs text-destructive mt-3">
+              {error instanceof Error ? error.message : "Unable to load dashboard data"}
+            </p>
+          )}
         </motion.div>
 
+        {!isLoading && !isError && data.sampleCount === 0 && (
+          <div className="glass-card p-4 mb-6 text-sm text-muted-foreground">
+            No typing session data yet. Type on the Home page to populate graphs.
+          </div>
+        )}
+
         <div className="grid md:grid-cols-2 gap-6">
+          {chartCard(
+            "MODEL ACCURACY (CNN / LSTM / ENSEMBLE)",
+            <BarChart3 className="w-5 h-5 text-primary" />,
+            <ResponsiveContainer>
+              <LineChart data={modelReport.history}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(215 30% 20%)" />
+                <XAxis dataKey="epoch" stroke="hsl(210 20% 55%)" fontSize={11} />
+                <YAxis stroke="hsl(210 20% 55%)" fontSize={11} domain={[0, 100]} />
+                <Tooltip contentStyle={customTooltipStyle} />
+                <Legend />
+                <Line type="monotone" dataKey="cnnValTop1" stroke="#00d2d3" strokeWidth={2} dot={false} name="CNN Val Top-1" />
+                <Line type="monotone" dataKey="lstmValTop1" stroke="#8b5cf6" strokeWidth={2} dot={false} name="LSTM Val Top-1" />
+                <Line type="monotone" dataKey="ensembleValTop1" stroke="#10b981" strokeWidth={2} dot={false} name="Ensemble Val Top-1" />
+              </LineChart>
+            </ResponsiveContainer>,
+            0.08
+          )}
+
           {chartCard(
             "DWELL TIME DISTRIBUTION",
             <Activity className="w-5 h-5 text-primary" />,
@@ -79,7 +155,7 @@ const GraphPage = () => {
                 <XAxis dataKey="keystroke" stroke="hsl(210 20% 55%)" fontSize={11} />
                 <YAxis stroke="hsl(210 20% 55%)" fontSize={11} />
                 <Tooltip contentStyle={customTooltipStyle} />
-                {Object.entries(COLORS).map(([key, color]) => (
+                {Object.entries(data.colors).map(([key, color]) => (
                   <Line key={key} type="monotone" dataKey={key} stroke={color} strokeWidth={2} dot={false} />
                 ))}
               </LineChart>
@@ -96,7 +172,7 @@ const GraphPage = () => {
                 <XAxis dataKey="keystroke" stroke="hsl(210 20% 55%)" fontSize={11} />
                 <YAxis stroke="hsl(210 20% 55%)" fontSize={11} />
                 <Tooltip contentStyle={customTooltipStyle} />
-                {Object.entries(COLORS).map(([key, color]) => (
+                {Object.entries(data.colors).map(([key, color]) => (
                   <Line key={key} type="monotone" dataKey={key} stroke={color} strokeWidth={2} dot={false} />
                 ))}
               </LineChart>
@@ -140,6 +216,143 @@ const GraphPage = () => {
             </ResponsiveContainer>,
             0.4
           )}
+
+          {chartCard(
+            "WPM / 10s WPM TREND",
+            <TrendingUp className="w-5 h-5 text-primary" />,
+            <ResponsiveContainer>
+              <LineChart data={data.featureTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(215 30% 20%)" />
+                <XAxis dataKey="session" stroke="hsl(210 20% 55%)" fontSize={11} />
+                <YAxis stroke="hsl(210 20% 55%)" fontSize={11} />
+                <Tooltip contentStyle={customTooltipStyle} />
+                <Legend />
+                <Line type="monotone" dataKey="wpm" stroke="#00d2d3" strokeWidth={2} dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="tenSecondWpm"
+                  stroke="#f59e0b"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>,
+            0.45
+          )}
+
+          {chartCard(
+            "MATCH / CONSISTENCY / BACKSPACE",
+            <Activity className="w-5 h-5 text-primary" />,
+            <ResponsiveContainer>
+              <LineChart data={data.featureTrendData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(215 30% 20%)" />
+                <XAxis dataKey="session" stroke="hsl(210 20% 55%)" fontSize={11} />
+                <YAxis stroke="hsl(210 20% 55%)" fontSize={11} />
+                <Tooltip contentStyle={customTooltipStyle} />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="promptMatchRatio"
+                  stroke="#10b981"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="consistencyScore"
+                  stroke="#3b82f6"
+                  strokeWidth={2}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="backspaceRate"
+                  stroke="#ef4444"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>,
+            0.5
+          )}
+        </div>
+
+        {modelReport.models.length > 0 && (
+          <div className="grid md:grid-cols-3 gap-4 mt-6">
+            {modelReport.models.map((model) => (
+              <div key={model.name} className="glass-card p-4">
+                <p className="text-xs text-primary font-display tracking-wider">{model.displayName}</p>
+                <p className="text-[11px] text-muted-foreground mt-1">{model.description}</p>
+                <p className="text-sm text-foreground mt-2">Val Top-1: {model.metrics.valTop1.toFixed(2)}%</p>
+                {typeof model.metrics.datasetTop1 === "number" && (
+                  <p className="text-xs text-muted-foreground">
+                    Dataset Top-1: {model.metrics.datasetTop1.toFixed(2)}%
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">Val Top-3: {model.metrics.valTop3.toFixed(2)}%</p>
+                <p className="text-xs text-muted-foreground">Val Top-5: {model.metrics.valTop5.toFixed(2)}%</p>
+                {typeof model.metrics.trainTop1 === "number" && (
+                  <p className="text-xs text-muted-foreground">Train Top-1: {model.metrics.trainTop1.toFixed(2)}%</p>
+                )}
+                <p
+                  className={`text-xs mt-2 ${
+                    model.metrics.meetsTarget ? "text-primary" : "text-amber-400"
+                  }`}
+                >
+                  {model.metrics.meetsTarget
+                    ? `Meets ${modelReport.targetAccuracy}% target`
+                    : `Below ${modelReport.targetAccuracy}% target`}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="grid md:grid-cols-2 gap-6 mt-6">
+          {chartCard(
+            "PASS / FAIL DISTRIBUTION",
+            <BarChart3 className="w-5 h-5 text-primary" />,
+            <ResponsiveContainer>
+              <BarChart data={data.resultDistribution}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(215 30% 20%)" />
+                <XAxis dataKey="result" stroke="hsl(210 20% 55%)" fontSize={11} />
+                <YAxis stroke="hsl(210 20% 55%)" fontSize={11} />
+                <Tooltip contentStyle={customTooltipStyle} />
+                <Bar dataKey="count" fill="#00d2d3" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>,
+            0.55
+          )}
+
+          {chartCard(
+            "10S MATCH RATE BY USER",
+            <Users className="w-5 h-5 text-primary" />,
+            <ResponsiveContainer>
+              <BarChart data={data.tenSecondMatchByUser}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(215 30% 20%)" />
+                <XAxis dataKey="user" stroke="hsl(210 20% 55%)" fontSize={11} />
+                <YAxis stroke="hsl(210 20% 55%)" fontSize={11} domain={[0, 100]} />
+                <Tooltip contentStyle={customTooltipStyle} />
+                <Bar dataKey="matchRate" fill="#f59e0b" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>,
+            0.58
+          )}
+
+          {chartCard(
+            "FEATURE AVERAGES",
+            <Activity className="w-5 h-5 text-primary" />,
+            <ResponsiveContainer>
+              <BarChart data={data.featureAverages}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(215 30% 20%)" />
+                <XAxis dataKey="feature" stroke="hsl(210 20% 55%)" fontSize={11} />
+                <YAxis stroke="hsl(210 20% 55%)" fontSize={11} />
+                <Tooltip contentStyle={customTooltipStyle} />
+                <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>,
+            0.6
+          )}
         </div>
 
         {/* Full-width scatter plot */}
@@ -162,7 +375,7 @@ const GraphPage = () => {
                 <YAxis dataKey="flight" name="Avg Flight (ms)" stroke="hsl(210 20% 55%)" fontSize={11} label={{ value: "Avg Flight (ms)", angle: -90, position: "insideLeft", fill: "hsl(210 20% 55%)", fontSize: 11 }} />
                 <Tooltip contentStyle={customTooltipStyle} formatter={(value: number) => `${value.toFixed(1)} ms`} />
                 <Legend formatter={(value) => <span style={{ color: "hsl(200 100% 95%)", fontSize: 12 }}>{value}</span>} />
-                {DATASET_USERS.map((u) => (
+                {data.users.map((u) => (
                   <Scatter
                     key={u.name}
                     name={u.name}

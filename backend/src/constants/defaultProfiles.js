@@ -1,0 +1,38 @@
+export const DEFAULT_USER_PROFILES = [
+  {
+    name: "Varsha",
+    email: "varsha.keystrokeid@gmail.com",
+    avgDwell: 118.5,
+    avgFlight: 295.0,
+    tolerance: 45,
+    color: "#00d2d3",
+    fallbackPassword: "secure123",
+  },
+  {
+    name: "Nagendra",
+    email: "nagendra.keystrokeid@gmail.com",
+    avgDwell: 1.8,
+    avgFlight: 185.0,
+    tolerance: 30,
+    color: "#3b82f6",
+    fallbackPassword: "secure123",
+  },
+  {
+    name: "Chandra Shekar",
+    email: "chandrashekar.keystrokeid@gmail.com",
+    avgDwell: 110.2,
+    avgFlight: 190.0,
+    tolerance: 40,
+    color: "#8b5cf6",
+    fallbackPassword: "secure123",
+  },
+  {
+    name: "Devi",
+    email: "devi.keystrokeid@gmail.com",
+    avgDwell: 66.5,
+    avgFlight: 360.0,
+    tolerance: 35,
+    color: "#f59e0b",
+    fallbackPassword: "secure123",
+  },
+];

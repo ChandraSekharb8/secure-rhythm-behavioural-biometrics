@@ -1,15 +1,32 @@
 import { Link, useLocation } from "react-router-dom";
-import { Shield, BarChart3, Info } from "lucide-react";
+import {
+  Shield,
+  BarChart3,
+  Info,
+  History,
+  LogOut,
+  LogIn,
+  LineChart,
+  UserPlus,
+} from "lucide-react";
 import { motion } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { path: "/", label: "Home", icon: Shield },
   { path: "/graph", label: "Graph", icon: BarChart3 },
+  { path: "/analysis", label: "Analysis", icon: LineChart },
+  { path: "/add-user", label: "Add User", icon: UserPlus },
   { path: "/about", label: "About", icon: Info },
 ];
 
 const Navbar = () => {
   const location = useLocation();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const items = isAuthenticated
+    ? [...navItems, { path: "/sessions", label: "Sessions", icon: History }]
+    : navItems;
 
   return (
     <motion.nav
@@ -34,7 +51,7 @@ const Navbar = () => {
         </Link>
 
         <div className="flex items-center gap-1">
-          {navItems.map(({ path, label, icon: Icon }) => (
+          {items.map(({ path, label, icon: Icon }) => (
             <Link
               key={path}
               to={path}
@@ -46,6 +63,30 @@ const Navbar = () => {
               <span className="hidden sm:inline">{label}</span>
             </Link>
           ))}
+          {isAuthenticated ? (
+            <>
+              <span className="hidden md:inline text-xs text-muted-foreground px-2">
+                {user?.fullName}
+              </span>
+              <button
+                onClick={logout}
+                className="nav-link flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </>
+          ) : (
+            <Link
+              to="/auth"
+              className={`nav-link flex items-center gap-2 ${
+                location.pathname === "/auth" ? "active text-primary" : ""
+              }`}
+            >
+              <LogIn className="w-4 h-4" />
+              <span className="hidden sm:inline">Login</span>
+            </Link>
+          )}
         </div>
       </div>
     </motion.nav>

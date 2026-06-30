@@ -1,73 +1,102 @@
-# Welcome to your Lovable project
+# Secure Rhythm
 
-## Project info
+Keystroke-dynamics authentication demo with:
+- `frontend`: React + Vite + TypeScript
+- `backend`: Node.js + Express + MongoDB (Mongoose)
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Project Structure
 
-## How can I edit this code?
+```text
+secure-rhythm/
+  backend/              # Express + MongoDB API
+  src/                  # React frontend
+```
 
-There are several ways of editing your application.
+## Prerequisites
 
-**Use Lovable**
+- Node.js 18+
+- MongoDB (local or remote)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Backend Setup
 
-Changes made via Lovable will be committed automatically to this repo.
+1. Install backend dependencies:
 
-**Use your preferred IDE**
+```bash
+cd backend
+npm install
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. Create backend environment file:
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+```bash
+copy .env.example .env
+```
 
-Follow these steps:
+3. Update `.env` as needed. For local manual runs, the included values already point to the workspace-local model file:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/behavioural_biometrics
+CLIENT_ORIGIN=http://localhost:8080
+AUTH_CONFIDENCE_THRESHOLD=60
+JWT_SECRET=dev-insecure-secret-change-in-production
+JWT_EXPIRES_IN=7d
+ML_MODEL_PATH=c:\Users\chand\OneDrive\Documents\OneDrive\Desktop\behavioural-biometrics\behavioural-biometrics\secure-rhythm\backend\data\keystroke-model.json
+DSL_DATASET_PATH=c:\Users\chand\OneDrive\Documents\OneDrive\Desktop\behavioural-biometrics\behavioural-biometrics\secure-rhythm\backend\data\keystroke-model.json
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+4. Start backend from the project root:
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+npm run backend:dev
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+## Frontend Setup
+
+1. Install frontend dependencies:
+
+```bash
+npm install
+```
+
+2. Start frontend from the project root:
+
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## One-click startup
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+From the project root in PowerShell, run:
 
-**Use GitHub Codespaces**
+```powershell
+./start-dev.ps1
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+This opens one terminal for the backend and one for the frontend.
 
-## What technologies are used for this project?
+Frontend runs on `http://localhost:8080`.
+Backend runs on `http://localhost:5000`.
+Vite proxy forwards `/api/*` to backend.
 
-This project is built with:
+## API Endpoints
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- `GET /api/health`
+- `POST /api/auth/signup`
+- `POST /api/auth/login`
+- `GET /api/auth/me` (auth required)
+- `POST /api/auth/identify`
+- `POST /api/auth/fallback`
+- `GET /api/analytics/charts`
+- `GET /api/analysis/dsl?top=15`
+- `POST /api/analysis/dsl/reload` (auth required)
+- `GET /api/users/profiles`
+- `GET /api/sessions?limit=20&authStatus=authenticated` (auth required)
+- `GET /api/sessions/summary` (auth required)
 
-## How can I deploy this project?
+## Notes
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Default seeded demo users: Varsha, Nagendra, Chandra Shekar, Devi.
+- Default fallback password for seeded users: `secure123`.
+- Login/signup users are stored in MongoDB and receive JWT bearer tokens.
+- Analysis page (`/analysis`) renders 10 DSL dataset visualizations from backend aggregates.
